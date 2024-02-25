@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: toko1
+    ports:
+      - '3307:3306'
+
+  toko1:
+    build: .
+    environment:
+      DATABASE_USERNAME: 'root'
+      DATABASE_PASSWORD: 'indonesia217'
+      DATABASE_HOST: 'db'
+      DATABASE_NAME: 'toko1'
+      DATABASE_PORT: 3307
+    depends_on:
+      - db
+    ports:
+      - 8080:8080

@@ -1,0 +1,418 @@
+definitions:
+  entity.CartInput:
+    properties:
+      product_id:
+        example: 1
+        type: integer
+      quantity:
+        example: 1
+        minimum: 0
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
+  entity.CartPostResponse:
+    properties:
+      product_title:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  entity.Category:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      products:
+        items:
+          $ref: '#/definitions/entity.Product'
+        type: array
+      type:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entity.CategoryResponseGet:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      products:
+        items:
+          $ref: '#/definitions/entity.ProductResponse'
+        type: array
+      type:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entity.Product:
+    properties:
+      category:
+        $ref: '#/definitions/entity.Category'
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      price:
+        type: integer
+      stock:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entity.ProductResponse:
+    properties:
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      price:
+        type: integer
+      stock:
+        type: integer
+      title:
+        type: string
+    type: object
+  entity.Transaction:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      product:
+        $ref: '#/definitions/entity.Product'
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+      total_price:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/entity.User'
+      user_id:
+        type: integer
+    type: object
+  entity.TransactionInput:
+    properties:
+      product_id:
+        example: 1
+        type: integer
+      quantity:
+        example: 1
+        minimum: 0
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
+  entity.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  entity.UserCartResponse:
+    properties:
+      id:
+        type: integer
+      product:
+        $ref: '#/definitions/entity.ProductResponse'
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  entity.UserLoginInput:
+    properties:
+      email:
+        example: kunto@aji.com
+        type: string
+      password:
+        example: dimask
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  entity.UserRegisterInput:
+    properties:
+      email:
+        example: kunto@aji.com
+        type: string
+      password:
+        example: dimask
+        minLength: 6
+        type: string
+      username:
+        example: dimas
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  entity.UserTransactionResponse:
+    properties:
+      id:
+        type: integer
+      product:
+        $ref: '#/definitions/entity.ProductResponse'
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+      total_price:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: A tag service API in Go using Gin framework
+  title: Tag Service API
+  version: "1.0"
+paths:
+  /cart:
+    get:
+      consumes:
+      - application/json
+      description: List of products that have been added to the shopping cart
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserCartResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Cart
+      tags:
+      - User
+    post:
+      consumes:
+      - application/json
+      description: Add product to shopping cart
+      parameters:
+      - description: Payload Body [RAW]
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.CartInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.CartPostResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Add to cart
+      tags:
+      - User
+  /cart/1:
+    delete:
+      consumes:
+      - application/json
+      description: Delete product list in shopping cart
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Delete cart
+      tags:
+      - User
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: View product list by product category
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.CategoryResponseGet'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Product category
+  /checkout:
+    post:
+      consumes:
+      - application/json
+      description: Checkout product list in shopping cart
+      parameters:
+      - description: Payload Body [RAW]
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.TransactionInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Transaction'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Checkout
+      tags:
+      - User
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: Product details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Product details
+  /transactions:
+    get:
+      consumes:
+      - application/json
+      description: List of payment transactions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserTransactionResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Payment transactions
+      tags:
+      - User
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Login an account
+      parameters:
+      - description: Payload Body [RAW]
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserLoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Login account
+      tags:
+      - User
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register an account
+      parameters:
+      - description: Payload Body [RAW]
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserRegisterInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Register account
+      tags:
+      - User
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

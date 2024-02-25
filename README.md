@@ -33,4 +33,5 @@
 </ul>
 
 <h2>ERD</h2>
+<img src="https://github.com/dimaskuntoaji/toko/blob/main/erd.PNG">
 
